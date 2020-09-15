@@ -20,6 +20,15 @@ const historyController = {
                 formRespone.error(res, err);
             })
     },
+    showHistoryByName: (req, res) => {
+        historyModel.showHistoryByName(req.params.name)
+            .then((data) => {
+                formRespone.success(res, data);
+            })
+            .catch((err) => {
+                formRespone.error(res, err);
+            })
+    },
     showHistory: (_, res) => {
         historyModel.showHistory()
             .then((data) => {

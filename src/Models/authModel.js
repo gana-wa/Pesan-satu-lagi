@@ -5,11 +5,11 @@ const db = require('../Configs/dbMySql');
 const authModel = {
     postNewUser: (body) => {
         return new Promise((resolve, reject) => {
-            const querySelect = 'SELECT username FROM tb_user WHERE username = ?';
-            db.query(querySelect, [body.username], (err, data) => {
+            const querySelect = 'SELECT telp FROM tb_user WHERE telp = ?';
+            db.query(querySelect, [body.telp], (err, data) => {
                 if (data.length) {
                     reject({
-                        msg: "Username is already taken..!"
+                        msg: "Nomer ini sudah terdaftar..!"
                     })
                 } else {
                     // registration
@@ -18,7 +18,7 @@ const authModel = {
                         if (err) {
                             reject(err);
                         }
-                        const { password } = body;
+                        const { password, name, telp, level_id } = body;
                         bcrypt.hash(password, salt, (err, hashedPassword) => {
                             if (err) {
                                 reject(err);
@@ -27,7 +27,16 @@ const authModel = {
                             const queryString = "INSERT INTO tb_user SET ?";
                             db.query(queryString, newBody, (err, data) => {
                                 if (!err) {
-                                    resolve(data);
+                                    const payload = {
+                                        telp,
+                                        name,
+                                        level_id,
+                                    }
+                                    const token = jwt.sign(payload, process.env.SECRET_KEY
+                                        // , { expiresIn: "6h" }
+                                    );
+                                    const msg = `${name} berhasil didaftarkan..!`;
+                                    resolve({ msg, name, telp, level_id, token });
                                 } else {
                                     reject(err);
                                 }
@@ -40,8 +49,8 @@ const authModel = {
     }, //end registration
     loginUser: (body) => {
         return new Promise((resolve, reject) => {
-            const queryString = "SELECT username, password, level_id FROM tb_user WHERE username=?";
-            db.query(queryString, body.username, (err, data) => {
+            const queryString = "SELECT name, telp, password, level_id FROM tb_user WHERE telp=?";
+            db.query(queryString, body.telp, (err, data) => {
                 // check error query
                 if (err) {
                     reject(err);
@@ -51,27 +60,28 @@ const authModel = {
                     // check password
                     bcrypt.compare(body.password, data[0].password, (err, result) => {
                         if (result) {
-                            const { username } = body;
-                            const { level_id } = data[0];
+                            const { telp } = body;
+                            const { level_id, name } = data[0];
                             const payload = {
-                                username,
+                                telp,
+                                name,
                                 level_id,
                             }
                             const token = jwt.sign(payload, process.env.SECRET_KEY
                                 // , { expiresIn: "6h" }
                             );
-                            const msg = "Login success..!";
-                            resolve({ msg, username, level_id, token })
+                            const msg = "Login berhasil..!";
+                            resolve({ msg, name, telp, level_id, token })
                         }
                         if (!result) {
-                            reject({ msg: "Wrong password..!" })
+                            reject({ msg: "Password salah..!" })
                         }
                         if (err) {
                             reject(err);
                         }
                     })
                 } else {
-                    reject({ msg: "Username not found..!" })
+                    reject({ msg: "Nomer ini belum terdaftar, silahkan daftar terlebih dahulu.." })
                 }
             })
         })

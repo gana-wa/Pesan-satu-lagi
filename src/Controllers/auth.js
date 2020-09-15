@@ -6,10 +6,10 @@ const authController = {
         authModel
             .postNewUser(req.body)
             .then((data) => {
-                const responeObj = {
-                    msg: `Register ${req.body.username} successfull..!`
-                }
-                formRespone.success(res, responeObj);
+                // const responeObj = {
+                //     msg: `${req.body.name} berhasil didaftarkan..!`
+                // }
+                formRespone.success(res, data);
             })
             .catch((err) => {
                 formRespone.error(res, err);

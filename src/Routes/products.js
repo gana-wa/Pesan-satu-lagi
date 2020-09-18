@@ -7,6 +7,7 @@ const uploadFile = require('../Helpers/Middleware/uploadFile');
 
 // get all product
 productRouter.get("/", productController.getAllProducts);
+productRouter.get("/category/:category_name", productController.getProductByCategory);
 // get with pagination
 productRouter.get("/pagination", productController.getPaginatedProducts);
 // insert product

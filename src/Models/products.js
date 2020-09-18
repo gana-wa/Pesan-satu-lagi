@@ -29,6 +29,21 @@ const productModel = {
          });
       });
    },
+   getProductByCategory: (category_name) => {
+      return new Promise((resolve, rejects) => {
+         const queryString = `${querySelect} WHERE tb_category.category_name = '${category_name}'`;
+         db.query(queryString, [category_name], (err, data) => {
+            if (!err) {
+               if (data.length !== 0) {
+                  resolve(data);
+               }
+               rejects({ msg: "Belum ada data" })
+            } else {
+               rejects(err);
+            }
+         })
+      });
+   },
    // GET or SELECT with SORTING
    sortProducts: (query) => {
       const sortBy = query.by;

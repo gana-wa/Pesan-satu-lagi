@@ -13,6 +13,16 @@ const productController = {
                 formRespone.error(res, err);
             })
     },
+    getProductByCategory: (req, res) => {
+        productModel
+            .getProductByCategory(req.params.category_name)
+            .then((data) => {
+                formRespone.success(res, data);
+            })
+            .catch((err) => {
+                formRespone.error(res, err);
+            })
+    },
     // GET PAGINATED
     getPaginatedProducts: (req, res) => {
         const { page, limit } = req.query;

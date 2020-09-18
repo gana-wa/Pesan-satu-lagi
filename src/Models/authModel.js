@@ -9,7 +9,7 @@ const authModel = {
             db.query(querySelect, [body.telp], (err, data) => {
                 if (data.length) {
                     reject({
-                        msg: "Nomer ini sudah terdaftar..!"
+                        msg: "Nomer ini sudah terdaftar, silahkan login"
                     })
                 } else {
                     // registration

@@ -24,7 +24,21 @@ const authController = {
             .catch((err) => {
                 formRespone.error(res, err)
             })
-    }
+    },
+    editUser: (req, res) => {
+        authModel
+            .editUser(req.params.id, req.body)
+            .then((data) => {
+                const responseObj = {
+                    msg: "Successfully updated..!",
+                    ...req.body
+                }
+                formRespone.success(res, responseObj);
+            })
+            .catch((err) => {
+                formRespone.error(res, err);
+            })
+    },
 }
 
 module.exports = authController;

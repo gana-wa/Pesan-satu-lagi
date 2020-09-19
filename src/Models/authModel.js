@@ -36,7 +36,8 @@ const authModel = {
                                         // , { expiresIn: "6h" }
                                     );
                                     const msg = `${name} berhasil didaftarkan..!`;
-                                    resolve({ msg, name, telp, level_id, token });
+                                    const id = data.insertId;
+                                    resolve({ msg, name, telp, level_id, token, id });
                                 } else {
                                     reject(err);
                                 }
@@ -49,7 +50,7 @@ const authModel = {
     }, //end registration
     loginUser: (body) => {
         return new Promise((resolve, reject) => {
-            const queryString = "SELECT name, telp, password, level_id FROM tb_user WHERE telp=?";
+            const queryString = "SELECT id, name, telp, password, level_id FROM tb_user WHERE telp=?";
             db.query(queryString, body.telp, (err, data) => {
                 // check error query
                 if (err) {
@@ -61,7 +62,7 @@ const authModel = {
                     bcrypt.compare(body.password, data[0].password, (err, result) => {
                         if (result) {
                             const { telp } = body;
-                            const { level_id, name } = data[0];
+                            const { level_id, name, id } = data[0];
                             const payload = {
                                 telp,
                                 name,
@@ -71,7 +72,7 @@ const authModel = {
                                 // , { expiresIn: "6h" }
                             );
                             const msg = "Login berhasil..!";
-                            resolve({ msg, name, telp, level_id, token })
+                            resolve({ msg, name, telp, level_id, token, id })
                         }
                         if (!result) {
                             reject({ msg: "Password salah..!" })
@@ -86,6 +87,18 @@ const authModel = {
             })
         })
     },
+    editUser: (id, body) => {
+        return new Promise((resolve, reject) => {
+            const queryUpdate = `UPDATE tb_user SET ? WHERE tb_user.id = '${id}'`;
+            db.query(queryUpdate, body, (err, data) => {
+                if (!err) {
+                    resolve(data);
+                } else {
+                    reject(err);
+                }
+            })
+        })
+    }
 }
 
 module.exports = authModel;
